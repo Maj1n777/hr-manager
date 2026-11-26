@@ -23,7 +23,8 @@ class HomeController
         $message = 'Раздел управления персоналом.';
 
         $links = [
-            '/?page=employees' => 'Управление сотрудниками'
+            '/?page=employees' => 'Управление сотрудниками',
+            '/?page=departments' => 'Управление подразделениями'
         ];
 
         require __DIR__ . '/../Views/role.php';
