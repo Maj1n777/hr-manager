@@ -7,3 +7,7 @@ services:
     volumes:
       - ./public:/var/www/html
       - ./app:/var/www/app
+      - database_data:/var/www/storage
+
+volumes:
+  database_data:
