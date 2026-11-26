@@ -18,6 +18,7 @@ if (!isset($_SESSION['csrf_token'])) {
 
 require_once __DIR__ . '/../app/Controllers/HomeController.php';
 require_once __DIR__ . '/../app/Controllers/AuthController.php';
+require_once __DIR__ . '/../app/Controllers/EmployeeController.php';
 
 $page = $_GET['page'] ?? 'home';
 
@@ -45,6 +46,11 @@ switch ($page) {
     case 'employee':
         $controller = new HomeController();
         $controller->employee();
+        break;
+
+    case 'employees':
+        $controller = new EmployeeController();
+        $controller->index();
         break;
 
     default:

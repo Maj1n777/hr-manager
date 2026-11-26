@@ -22,6 +22,10 @@ class HomeController
         $heading = 'Панель администратора';
         $message = 'Раздел управления персоналом.';
 
+        $links = [
+            '/?page=employees' => 'Управление сотрудниками'
+        ];
+
         require __DIR__ . '/../Views/role.php';
     }
 
@@ -31,6 +35,8 @@ class HomeController
 
         $heading = 'Личный кабинет сотрудника';
         $message = 'Раздел персональной информации.';
+
+        $links = [];
 
         require __DIR__ . '/../Views/role.php';
     }

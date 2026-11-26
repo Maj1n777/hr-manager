@@ -10,7 +10,17 @@
 
 <p><?= htmlspecialchars($message) ?></p>
 
-<p>Доступ успешно предоставлен.</p>
+<?php foreach ($links as $url => $label): ?>
+
+    <p>
+        <a href="<?= htmlspecialchars($url) ?>">
+            <?= htmlspecialchars($label) ?>
+        </a>
+    </p>
+
+<?php endforeach; ?>
+
+<hr>
 
 <a href="/">На главную</a>
 
