@@ -33,13 +33,18 @@ switch ($page) {
         break;
 
     case 'home':
-        if (!isset($_SESSION['user_id'])) {
-            header('Location: /?page=login');
-            exit;
-        }
-
         $controller = new HomeController();
         $controller->index();
+        break;
+
+    case 'admin':
+        $controller = new HomeController();
+        $controller->admin();
+        break;
+
+    case 'employee':
+        $controller = new HomeController();
+        $controller->employee();
         break;
 
     default:
