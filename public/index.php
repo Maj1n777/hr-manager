@@ -20,6 +20,7 @@ require_once __DIR__ . '/../app/Controllers/HomeController.php';
 require_once __DIR__ . '/../app/Controllers/AuthController.php';
 require_once __DIR__ . '/../app/Controllers/EmployeeController.php';
 require_once __DIR__ . '/../app/Controllers/DepartmentController.php';
+require_once __DIR__ . '/../app/Controllers/PositionController.php';
 
 $page = $_GET['page'] ?? 'home';
 
@@ -56,6 +57,11 @@ switch ($page) {
 
     case 'departments':
         $controller = new DepartmentController();
+        $controller->index();
+        break;
+
+    case 'positions':
+        $controller = new PositionController();
         $controller->index();
         break;
 

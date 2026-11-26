@@ -24,7 +24,8 @@ class HomeController
 
         $links = [
             '/?page=employees' => 'Управление сотрудниками',
-            '/?page=departments' => 'Управление подразделениями'
+            '/?page=departments' => 'Управление подразделениями',
+            '/?page=positions' => 'Управление должностями'
         ];
 
         require __DIR__ . '/../Views/role.php';
