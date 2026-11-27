@@ -71,6 +71,11 @@ switch ($page) {
         $controller->index();
         break;
 
+    case 'leave_review':
+        $controller = new LeaveController();
+        $controller->review();
+        break;
+
     default:
         http_response_code(404);
         echo 'Страница не найдена';

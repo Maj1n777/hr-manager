@@ -63,4 +63,72 @@ class LeaveRequest
 
         return $stmt->rowCount() === 1;
     }
+
+    public function getAll(): array
+    {
+        $db = Database::getConnection();
+
+        return $db->query(
+            "SELECT lr.*,
+                    e.full_name AS employee_name,
+                    e.is_active AS employee_active,
+                    d.name AS department_name,
+                    u.username AS reviewer_name
+             FROM leave_requests lr
+             JOIN employees e
+                 ON lr.employee_id = e.id
+             JOIN departments d
+                 ON e.department_id = d.id
+             LEFT JOIN users u
+                 ON lr.reviewed_by = u.id
+             ORDER BY
+                 CASE WHEN lr.status = 'pending'
+                      THEN 0 ELSE 1 END,
+                 lr.created_at DESC,
+                 lr.id DESC"
+        )->fetchAll();
+    }
+
+    public function review(
+        int $id,
+        string $status,
+        int $reviewerId
+    ): bool {
+        if (!in_array(
+            $status,
+            ['approved', 'rejected'],
+            true
+        )) {
+            return false;
+        }
+
+        $db = Database::getConnection();
+
+        $stmt = $db->prepare(
+            "UPDATE leave_requests
+             SET status = :status,
+                 reviewed_by = :reviewer,
+                 reviewed_at = CURRENT_TIMESTAMP
+             WHERE id = :id
+             AND status = 'pending'
+             AND (
+                 :decision = 'rejected'
+                 OR EXISTS (
+                     SELECT 1 FROM employees
+                     WHERE employees.id =
+                         leave_requests.employee_id
+                     AND is_active = 1
+                 )
+             )"
+        );
+
+        $stmt->execute([
+            'status' => $status,
+            'reviewer' => $reviewerId,
+            'id' => $id,
+            'decision' => $status
+        ]);
+
+        return $stmt->rowCount() === 1;
+    }
 }

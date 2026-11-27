@@ -92,6 +92,75 @@ class LeaveController
         require __DIR__ . '/../Views/leaves.php';
     }
 
+    public function review(): void
+    {
+        $user = Auth::requireRole('admin');
+
+        $model = new LeaveRequest();
+
+        $error = '';
+        $success = $_SESSION['leave_review_success'] ?? '';
+
+        unset($_SESSION['leave_review_success']);
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $token = $_POST['csrf_token'] ?? '';
+
+            if (!is_string($token) ||
+                !hash_equals($_SESSION['csrf_token'], $token)) {
+                http_response_code(403);
+                exit('Недействительный запрос');
+            }
+
+            $id = filter_var(
+                $_POST['id'] ?? '',
+                FILTER_VALIDATE_INT,
+                ['options' => ['min_range' => 1]]
+            );
+
+            $status = $_POST['status'] ?? '';
+
+            if ($id === false ||
+                !in_array(
+                    $status,
+                    ['approved', 'rejected'],
+                    true
+                )) {
+                http_response_code(400);
+                exit('Некорректные данные запроса');
+            }
+
+            try {
+                $updated = $model->review(
+                    $id,
+                    $status,
+                    (int) $user['id']
+                );
+
+                if ($updated) {
+                    $_SESSION['leave_review_success'] =
+                        $status === 'approved'
+                            ? 'Заявка успешно одобрена.'
+                            : 'Заявка успешно отклонена.';
+
+                    header('Location: /?page=leave_review');
+                    exit;
+                }
+
+                $error = 'Заявка уже рассмотрена, не существует '
+                    . 'или сотрудник находится в архиве.';
+
+            } catch (PDOException $e) {
+                error_log($e->getMessage());
+                $error = 'Ошибка обработки заявки.';
+            }
+        }
+
+        $requests = $model->getAll();
+
+        require __DIR__ . '/../Views/leave_review.php';
+    }
+
     private function field(string $name): string
     {
         $value = $_POST[$name] ?? '';
