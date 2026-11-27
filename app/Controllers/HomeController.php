@@ -38,7 +38,9 @@ class HomeController
         $heading = 'Личный кабинет сотрудника';
         $message = 'Раздел персональной информации.';
 
-        $links = [];
+        $links = [
+            '/?page=leaves' => 'Заявки на отпуск'
+        ];
 
         require __DIR__ . '/../Views/role.php';
     }
