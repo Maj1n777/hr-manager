@@ -84,6 +84,27 @@ class Employee
         ]);
     }
 
+    public function getProfile(int $id): ?array
+    {
+        $db = Database::getConnection();
+
+        $stmt = $db->prepare(
+            "SELECT e.*,
+                d.name AS department_name,
+                p.name AS position_name
+         FROM employees e
+         JOIN departments d
+             ON e.department_id = d.id
+         JOIN positions p
+             ON e.position_id = p.id
+         WHERE e.id = :id
+         AND e.is_active = 1"
+        );
+
+        $stmt->execute(['id' => $id]);
+
+        return $stmt->fetch() ?: null;
+    }
     public function getDepartments(): array
     {
         $db = Database::getConnection();

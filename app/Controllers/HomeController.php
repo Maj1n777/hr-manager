@@ -1,6 +1,8 @@
 <?php
 
 require_once __DIR__ . '/../Models/AppInfo.php';
+require_once __DIR__ . '/../Models/Employee.php';
+require_once __DIR__ . '/../Models/LeaveRequest.php';
 require_once __DIR__ . '/../Core/Auth.php';
 
 class HomeController
@@ -34,15 +36,36 @@ class HomeController
 
     public function employee(): void
     {
-        Auth::requireRole('employee');
+        $user = Auth::requireRole('employee');
 
-        $heading = 'Личный кабинет сотрудника';
-        $message = 'Раздел персональной информации.';
+        $employeeId = (int) $user['employee_id'];
 
-        $links = [
-            '/?page=leaves' => 'Заявки на отпуск'
+        $employeeModel = new Employee();
+        $employee = $employeeModel->getProfile($employeeId);
+
+        if (!$employee) {
+            http_response_code(404);
+            exit('Информация о сотруднике не найдена');
+        }
+
+        $leaveModel = new LeaveRequest();
+        $requests = $leaveModel->getByEmployee($employeeId);
+
+        $stats = [
+            'total' => count($requests),
+            'pending' => 0,
+            'approved' => 0,
+            'rejected' => 0
         ];
 
-        require __DIR__ . '/../Views/role.php';
+        foreach ($requests as $request) {
+            $status = $request['status'];
+
+            if (isset($stats[$status])) {
+                $stats[$status]++;
+            }
+        }
+
+        require __DIR__ . '/../Views/employee_profile.php';
     }
 }
